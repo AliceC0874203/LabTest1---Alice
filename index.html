@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Weekly Wage Calculator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #wageForm {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 250px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #result {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: left;
+        }
+
+        #clear {
+            background-color: #dc3545;
+        }
+
+        #clear:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Weekly Wage Calculator</h1>
+        <form id="wageForm">
+            <input type="number" id="hourlyRate" placeholder="Hourly Rate" required>
+            <input type="number" id="hoursWorked" placeholder="Hours Worked" required>
+            <button type="submit">Calculate</button>
+            <button type="button" id="clear">Clear</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+
+        document.getElementById('wageForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            var hourlyRate = document.getElementById('hourlyRate').value;
+            var hoursWorked = document.getElementById('hoursWorked').value;
+
+            // call API by using fetch function call post method.
+            fetch('/calculate-wage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ hourlyRate, hoursWorked }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    //display the result in the UI by using innerHTML
+                    document.getElementById('result').innerHTML =
+                        'Hourly Rate: $' + hourlyRate + ' & ' + 'Hours Worked: Hrs ' + hoursWorked + '<br><br>' +
+                        'Regular Pay: $' + data.regularPay + '<br>' +
+                        'Overtime > 40 Pay (1.5x): $' + data.overtime40 + '<br>' +
+                        'Overtime > 50 Pay (2x): $' + data.overtime50 + '<br>' +
+                        'Overtime > 60 Pay (2.5x): $' + data.overtime60 + '<br>' +
+                        'Total Overtime Pay: $' + data.overtimePay + '<br>' +
+                        'Total Pay: $' + data.totalPay;
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        });
+
+        document.getElementById('clear').addEventListener('click', function () {
+            document.getElementById('hourlyRate').value = '';
+            document.getElementById('hoursWorked').value = '';
+            document.getElementById('result').innerHTML = '';
+        });
+    </script>
+</body>
+
+</html>
